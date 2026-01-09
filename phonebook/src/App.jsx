@@ -3,6 +3,7 @@ import axios from 'axios'
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import phonebook from './services/phonebook'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,9 +12,7 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(()=>{
-    axios.get('http://localhost:3001/persons').then(response => {
-      setPersons(response.data)
-    })
+    phonebook.getAll().then(contacts => setPersons(contacts))
   },[])
 
   const handleSubmit = (event) => {
@@ -21,7 +20,7 @@ const App = () => {
     const newContact = {
       name: newName,
       number: newNumber,
-      id: `${persons.length + 2}`,
+      // id: `${persons.length + 2}`,
     };
     for (let i = 0; i < persons.length; i++) {
       if (persons[i].name === newName) {
@@ -29,9 +28,7 @@ const App = () => {
         return;
       }
     }
-    const copyPeople = [...persons];
-    copyPeople.push(newContact);
-    setPersons(copyPeople);
+    phonebook.create(newContact).then(setPersons(persons.concat(newContact)))
     setNewName("");
     setNewNumber("");
   };
