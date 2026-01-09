@@ -28,10 +28,20 @@ const App = () => {
         return;
       }
     }
-    phonebook.create(newContact).then(setPersons(persons.concat(newContact)))
+    phonebook.create(newContact).then(updatedContacts => setPersons(persons.concat(updatedContacts)))
     setNewName("");
     setNewNumber("");
   };
+
+  const handleDelete = (event, person) => {
+    event.preventDefault()
+    if(confirm(`Are you sure you want to delete ${person.name}?`)){
+      phonebook.deleteContact(person.id)
+      setPersons(persons.filter((personInContacts) => personInContacts.id !== person.id))
+    }else{
+      console.log('function cancelled');
+    }
+  }
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -65,7 +75,7 @@ const App = () => {
         handleSubmit={handleSubmit}
       />
       <h2>Numbers</h2>
-      <Persons people={contactsFiltered} />
+      <Persons people={contactsFiltered} handleDelete ={handleDelete} />
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import React from "react";
 
-const Persons = ({ people }) => {
-  console.log(people);
-  return people.map((person) => (
+const Persons = (props) => {
+  console.log(props.people);
+  return props.people.map((person) => (
     <div key={person.id}>
-      {person.name} {person.number}
+        <p>{person.name} {person.number} <button type='submit' onClick={(event)=>{props.handleDelete(event, person)}}>Delete</button></p>
     </div>
   ));
 };
