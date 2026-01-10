@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import phonebook from "./services/phonebook";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [confirmMessage, setConfirmMessage] = useState(null)
 
   useEffect(() => {
     phonebook.getAll().then((contacts) => setPersons(contacts));
@@ -85,6 +86,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={confirmMessage}/>
       <Filter
         persons={persons}
         handleChange={handleFilterChange}
