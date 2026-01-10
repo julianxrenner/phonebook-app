@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from 'axios'
+import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import phonebook from './services/phonebook'
+import phonebook from "./services/phonebook";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,9 +11,9 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
 
-  useEffect(()=>{
-    phonebook.getAll().then(contacts => setPersons(contacts))
-  },[])
+  useEffect(() => {
+    phonebook.getAll().then((contacts) => setPersons(contacts));
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -24,24 +24,48 @@ const App = () => {
     };
     for (let i = 0; i < persons.length; i++) {
       if (persons[i].name === newName) {
-        alert(`${newName} already exists in the phonebook`);
-        return;
+        if (
+          confirm(
+            `${newName} already exists in the phonebook, Would you like to replace the old number with the new one?`
+          )
+        ) {
+          phonebook.update(persons[i].id, newContact).then((updatedContact) =>
+            setPersons(
+              persons.map((personInContacts) => {
+                if (personInContacts.id === updatedContact.id) {
+                  return updatedContact;
+                } else {
+                  return personInContacts;
+                }
+              })
+            )
+          );
+          setNewName("");
+          setNewNumber("");
+          return;
+        } else {
+          return;
+        }
       }
     }
-    phonebook.create(newContact).then(updatedContacts => setPersons(persons.concat(updatedContacts)))
+    phonebook
+      .create(newContact)
+      .then((updatedContacts) => setPersons(persons.concat(updatedContacts)));
     setNewName("");
     setNewNumber("");
   };
 
   const handleDelete = (event, person) => {
-    event.preventDefault()
-    if(confirm(`Are you sure you want to delete ${person.name}?`)){
-      phonebook.deleteContact(person.id)
-      setPersons(persons.filter((personInContacts) => personInContacts.id !== person.id))
-    }else{
-      console.log('function cancelled');
+    event.preventDefault();
+    if (confirm(`Are you sure you want to delete ${person.name}?`)) {
+      phonebook.deleteContact(person.id);
+      setPersons(
+        persons.filter((personInContacts) => personInContacts.id !== person.id)
+      );
+    } else {
+      console.log("function cancelled");
     }
-  }
+  };
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -75,7 +99,7 @@ const App = () => {
         handleSubmit={handleSubmit}
       />
       <h2>Numbers</h2>
-      <Persons people={contactsFiltered} handleDelete ={handleDelete} />
+      <Persons people={contactsFiltered} handleDelete={handleDelete} />
     </div>
   );
 };
